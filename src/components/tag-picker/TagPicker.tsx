@@ -1,9 +1,10 @@
-import React from "react"
-import { FlatList, View, Text } from "react-native"
+import React, { useState } from "react"
+import { FlatList, View, Text, Pressable } from "react-native"
 import { useTailwind } from "tailwind-rn"
 import randomColor from "randomcolor"
+import Tag from "./Tag"
 
-const TAGS = [
+let TAGS = [
   "work",
   "stuff",
   "today",
@@ -39,41 +40,50 @@ const getRandomBrightTailwindColor = () => {
 }
 
 const TagPicker: React.FC = () => {
+  const [tags, setTags] = useState(TAGS)
+  const [isEditMode, setIsEditMode] = useState(false)
   const tw = useTailwind()
 
+  const handleLongPress = () => {
+    setIsEditMode(true)
+  }
+
+  const deleteTag = (item: string) => {
+    setTags((prev) => prev.filter((tag) => tag !== item))
+  }
+
+  const handleQuitEditMode = () => {
+    if (isEditMode) {
+      setIsEditMode(false)
+    }
+  }
+
   return (
-    <View>
-      <FlatList
-        data={TAGS}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        initialScrollIndex={(TAGS.length - 1) / 2}
-        contentContainerStyle={tw(
-          "justify-center flex-row items-center mt-4 pb-4"
-        )}
-        renderItem={({ item, index }) => {
-          const color = randomColor({ luminosity: "light" })
-          return (
-            <View
-              style={[
-                tw(`mx-3 py-1 px-4  rounded-lg border-2 }`),
-                {
-                  borderColor: color,
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  color: color,
-                }}
-              >
-                {item}
-              </Text>
-            </View>
-          )
-        }}
-      />
-    </View>
+    <Pressable onPress={handleQuitEditMode} hitSlop={30}>
+      <View>
+        <FlatList
+          data={tags}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          initialScrollIndex={(TAGS.length - 1) / 2}
+          contentContainerStyle={tw(
+            "justify-center flex-row items-center mt-4 pb-4"
+          )}
+          renderItem={({ item, index }) => {
+            const color = randomColor({ luminosity: "light" })
+            return (
+              <Tag
+                color={color}
+                item={item}
+                isEditMode={isEditMode}
+                onLongPress={handleLongPress}
+                onTagDelete={deleteTag}
+              />
+            )
+          }}
+        />
+      </View>
+    </Pressable>
   )
 }
 
