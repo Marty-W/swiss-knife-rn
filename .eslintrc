@@ -1,3 +1,6 @@
 {
-  "extends": ["@react-native-community", "eslint-config-prettier"]
+  "extends": ["@react-native-community", "plugin:prettier/recommended"],
+  "rules": {
+    "react/no-unstable-nested-components": "off"
+  }
 }
